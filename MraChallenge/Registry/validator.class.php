@@ -29,7 +29,7 @@ class Validator {
                 $data = "";
                 if (isset($_POST[$field])) {
                     $data = $this->sanitizeData($_POST[$field]);
-                    echo $data = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
+                    $data = filter_input(INPUT_POST, $field, FILTER_SANITIZE_STRING);
                 }
                 
                 if (empty($data)) {

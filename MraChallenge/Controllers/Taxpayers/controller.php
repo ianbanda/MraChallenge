@@ -8,7 +8,7 @@ class Taxpayerscontroller {
         $this->registry = $registry;
 
         $urlBits = $this->registry->getObject('url')->getURLBits();
-        //print_r($urlBits);
+
         if (isset($_SESSION['loggedin'])) {
             if (isset($urlBits[1])) {
                 switch (strtolower($urlBits[1])) {
@@ -43,12 +43,9 @@ class Taxpayerscontroller {
         $url = BASEURL . "/Taxpayers/getAll";
         $result = $this->registry->getObject('api')->processRequest($url, null, 'GET');
         //print_r($result);
-        //echo 'jhfjfhfhjfhj';
         
         $taxpayers = $result;
         
-        //$result = array("ian"=>array("wow"=>"hey"));
-
         $cache = $this->registry->getObject('template')->cacheData($result);
         $this->registry->getObject('template')->getPage()->addTag('listTaxpayers', array('DATA', $cache));
     }
@@ -65,6 +62,8 @@ class Taxpayerscontroller {
             "editPhyLocation"=>"required",
             "editMobileNumber"=>"required",
         );
+        
+        
         
         foreach ($fields as $field => $value) {
                 $this->registry->getObject("template")->getPage()->addTag($field, "");
@@ -84,6 +83,9 @@ class Taxpayerscontroller {
             "phyLocation"=>"required",
             "mobileNumber"=>"required",
         );
+
+        //Sets the value of formerror to blank
+        $this->registry->getObject('template')->getPage()->addTag('formerror', '');
         
         foreach ($fields as $field => $value) {
                 $this->registry->getObject("template")->getPage()->addTag($field, "");
@@ -155,12 +157,20 @@ class Taxpayerscontroller {
                     "Username" => "banda.ian45@gmail.com",
                     "Deleted" => false
                 );
-                echo $data = json_encode($d);
+                $data = json_encode($d);
 
                 $api = $this->registry->getObject("api");
                 $url = BASEURL . "/Taxpayers/add";
-                $result = $api->processRequest($url, $data, 'POST');
+                $customresult = $api->processRequest($url, $data, 'POST');
                 //print_r($result);
+                
+                $dbresult = json_decode($api->getDBResult(),true);
+                //print_r($dbresult);
+                $this->registry->getObject('template')->getPage()->addTag('formerror', $dbresult['Remark']);
+            }
+            else
+            {
+                $this->registry->getObject('template')->getPage()->addTag('formerror', '');
             }
         }
         else
@@ -185,7 +195,7 @@ class Taxpayerscontroller {
 
         if (isset($_POST['editTaxpayerForm'])) {
             $valResult = $this->registry->getObject('validator')->validate($fields);
-            print_r($_POST); 
+            //print_r($_POST); 
             $validated = "NO";
             foreach ($valResult as $key => $value) {
                 $validated = $value;
@@ -218,12 +228,22 @@ class Taxpayerscontroller {
                 $url = BASEURL . "/Taxpayers/edit";
                 $result = $api->processRequest($url, $data, 'POST');
                 //print_r($result);
+                $dbresult = json_decode($api->getDBResult(),true);
+                //print_r($dbresult);
+                if(isset($dbresult['Remark'])){
+                    $this->registry->getObject('template')->getPage()->addTag('formerror', $dbresult['Remark']);
+                } else {
+                    $this->registry->getObject('template')->getPage()->addTag('formerror', '');
+                }
+                
             } else {
                 //echo 'the form had errors';
+                $this->registry->getObject('template')->getPage()->addTag('formerror', 'There were errors with the form');
             }
         }
         else
         {
+            $this->registry->getObject('template')->getPage()->addTag('formerror', '');
             $this->loadEditForm();
         }
         $this->registry->getObject('template')->buildFromTemplates('header.tpl.php', 'Taxpayers/edit.tpl.php', 'footer.tpl.php');

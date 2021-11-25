@@ -16,13 +16,9 @@ $registry->createAndStoreObject('validator', 'validator');
 $loggedin = "loggedout";
 
 $registry->getObject('url')->getURLData();
-// database settings
 
-//$_SESSION['featuredmodel'] = "1";
-// create a database connection
 $controller = $registry->getObject('url')->getURLBit(0);
 
-//$registry->createAndStoreObject('extraSettings', 'exsets');
 
 $registry->getObject('template')->getPage()->addTag('siteurl', $registry->getSetting('siteurl'));
 
@@ -69,6 +65,7 @@ if (in_array($controller, $controllers)) {
 if(isset($_SESSION['loggedin']))
 {
     $registry->getObject('template')->addTemplateBit('userbar', 'userbar_loggedin.tpl.php');
+    $registry->getObject('template')->addTemplateBit('rightbit', 'rightbit.tpl.php');
     $registry->getObject('template')->getPage()->addTag('myemail', $_SESSION['myemail']);
 }
 else
