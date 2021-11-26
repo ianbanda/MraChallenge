@@ -8,6 +8,8 @@
 
 class Api {
 
+    private $dbResult;
+    
     function __construct() {
         
     }
@@ -33,11 +35,11 @@ class Api {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            //print_r($data); //array printout used during debugging
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $result = curl_exec($ch);
+        $this->dbResult = $result;
         curl_close($ch);
         //print_r($result);//array printout used during debugging
 
@@ -48,4 +50,7 @@ class Api {
         return $jresult;
     }
 
+    public function getDBResult() {
+        return $this->dbResult;
+    }
 }
